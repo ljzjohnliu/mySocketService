@@ -2,7 +2,6 @@ package com.zdmysocketservice;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
@@ -20,11 +19,12 @@ import com.zdmysocketservice.util.WifiInfoUtil;
 
 public class ServicesTestTwoActivity extends AppCompatActivity {
 
+    private SocketServer mSocketServer;
     private TextView mWifiName;
     private TextView mIpAddress;
-    private EditText mSendMessage;
+    private EditText mMessageEdit;
     private boolean mIsWifiEnable;
-    private Button mSendBtn;
+    private Button mSendtoClientBtn;
     private Button mStartConnectBtn;
     private TextView mRecevierClientMessText;
     private Handler myHandler = new Handler() {
@@ -56,9 +56,9 @@ public class ServicesTestTwoActivity extends AppCompatActivity {
         }
         mWifiName = findViewById(R.id.wifi_name);
         mIpAddress = findViewById(R.id.ip_address);
-        mSendMessage = findViewById(R.id.message_edit);
+        mMessageEdit = findViewById(R.id.message_edit);
         mIsWifiEnable = WifiInfoUtil.isWifiEnabled(this);
-        mSendBtn = findViewById(R.id.send_recevice_message_btn);
+        mSendtoClientBtn = findViewById(R.id.send_message_toclient_btn);
 
         mStartConnectBtn = findViewById(R.id.start_connect_btn);
         mRecevierClientMessText = findViewById(R.id.receve_client_message_text);
@@ -75,37 +75,54 @@ public class ServicesTestTwoActivity extends AppCompatActivity {
             }
         }
 
-        mSendBtn.setOnClickListener(new View.OnClickListener() {
+
+        mSocketServer = new SocketServer();
+
+
+        mSendtoClientBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                new Thread() {
+//                    @Override
+//                    public void run() {
+                String mesStr = mMessageEdit.getText().toString();
+                Log.e("zhengdan", "要发送的数据：" + mesStr);
+                if (mSocketServer != null) {
+                    mSocketServer.sendMessagetoClient(mesStr);
+                }
 
+//                    }
+//                }.start();
             }
         });
 
         mStartConnectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
-                new Thread() {
+//                new Thread() {
+//                    @Override
+//                    public void run() {
+                if (mSocketServer == null)
+                    return;
+
+//                mSocketServer.startService();
+                mSocketServer.startService(new SocketServer.clientMessageCallBack() {
                     @Override
-                    public void run() {
-                        final SocketServer mSocketServer = new SocketServer();
-                        mSocketServer.startService(new SocketServer.clientMessageCallBack() {
-                            @Override
-                            public void getClientMessage(String message) {
-                                Log.d("zhengdan", "getClientMessage: message = " + message);
-                                Log.d("zhengdan", "getClientMessage: myHandler.getLooper() = " + myHandler.getLooper());
-                                if (!TextUtils.isEmpty(message)) {
-                                    Message message1 = myHandler.obtainMessage();
-                                    message1.what = 1;
-                                    message1.arg1 = 1;
-                                    message1.obj = message;
-                                    Log.d("zhengdan", "getClientMessage: message1.obj = " + message1.obj);
-                                    myHandler.sendMessage(message1);
-                                }
-                            }
-                        });
+                    public void getMessage(String message) {
+                        Log.d("zhengdan", "getMessage: message = " + message);
+                        Log.d("zhengdan", "getMessage: myHandler.getLooper() = " + myHandler.getLooper());
+                        if (!TextUtils.isEmpty(message)) {
+                            Message message1 = myHandler.obtainMessage();
+                            message1.what = 1;
+                            message1.arg1 = 1;
+                            message1.obj = message;
+                            Log.d("zhengdan", "getMessage: message1.obj = " + message1.obj);
+                            myHandler.sendMessage(message1);
+                        }
                     }
-                }.start();
+                });
+//                    }
+//                }.start();
             }
         });
 

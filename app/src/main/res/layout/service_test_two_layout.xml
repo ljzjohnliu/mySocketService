@@ -73,7 +73,7 @@
         android:hint="请输入要发送数据"
         android:layout_height="150dp" />
     <Button
-        android:id="@+id/send_recevice_message_btn"
+        android:id="@+id/send_message_toclient_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="发送数据给客户端"/>
