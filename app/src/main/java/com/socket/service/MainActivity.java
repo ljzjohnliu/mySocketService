@@ -6,6 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+/**
+ * @author ljz
+ *
+ */
 public class MainActivity extends AppCompatActivity {
 
     private Button mServiceTestBtn;
