@@ -1,4 +1,4 @@
-package com.zdmysocketservice;
+package com.socket.service;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,9 +8,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.zd.mysocketservice.R;
-import com.zdmysocketservice.util.TcpServer;
-import com.zdmysocketservice.util.WifiInfoUtil;
+import com.socket.service.util.TcpServer;
+import com.socket.service.util.WifiInfoUtil;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

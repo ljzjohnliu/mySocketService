@@ -1,4 +1,4 @@
-package com.zdmysocketservice;
+package com.socket.service;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,11 +13,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.zd.mysocketservice.R;
-import com.zdmysocketservice.util.SocketServer;
-import com.zdmysocketservice.util.WifiInfoUtil;
+import com.socket.service.util.SocketServer;
+import com.socket.service.util.WifiInfoUtil;
 
 public class ServicesTestTwoActivity extends AppCompatActivity {
+
+    private static final String TAG = "ServicesTestTwoActivity";
 
     private SocketServer mSocketServer;
     private TextView mWifiName;
@@ -27,16 +28,17 @@ public class ServicesTestTwoActivity extends AppCompatActivity {
     private Button mSendtoClientBtn;
     private Button mStartConnectBtn;
     private TextView mRecevierClientMessText;
+
     private Handler myHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            Log.e("zhengdan", "handleMessage  ***********");
+            Log.d(TAG, "handleMessage  ***********");
             int what = msg.what;
             if (what == 1) {
                 String info = (String) msg.obj;
                 if (!TextUtils.isEmpty(info)) {
-                    Log.e("zhengdan", "handleMessage  ***********  收到客户端消息   " + info);
+                    Log.d(TAG, "handleMessage  ***********  收到客户端消息   " + info);
                     Toast.makeText(ServicesTestTwoActivity.this, "收到客户端消息  " + info, Toast.LENGTH_LONG).show();
                     mRecevierClientMessText.setText(info);
                 }
@@ -86,7 +88,7 @@ public class ServicesTestTwoActivity extends AppCompatActivity {
 //                    @Override
 //                    public void run() {
                 String mesStr = mMessageEdit.getText().toString();
-                Log.e("zhengdan", "要发送的数据：" + mesStr);
+                Log.d(TAG, "要发送的数据：" + mesStr);
                 if (mSocketServer != null) {
                     mSocketServer.sendMessagetoClient(mesStr);
                 }
@@ -102,21 +104,22 @@ public class ServicesTestTwoActivity extends AppCompatActivity {
 //                new Thread() {
 //                    @Override
 //                    public void run() {
-                if (mSocketServer == null)
+                if (mSocketServer == null) {
                     return;
+                }
 
 //                mSocketServer.startService();
                 mSocketServer.startService(new SocketServer.clientMessageCallBack() {
                     @Override
                     public void getMessage(String message) {
-                        Log.d("zhengdan", "getMessage: message = " + message);
-                        Log.d("zhengdan", "getMessage: myHandler.getLooper() = " + myHandler.getLooper());
+                        Log.d(TAG, "getMessage: message = " + message);
+                        Log.d(TAG, "getMessage: myHandler.getLooper() = " + myHandler.getLooper());
                         if (!TextUtils.isEmpty(message)) {
                             Message message1 = myHandler.obtainMessage();
                             message1.what = 1;
                             message1.arg1 = 1;
                             message1.obj = message;
-                            Log.d("zhengdan", "getMessage: message1.obj = " + message1.obj);
+                            Log.d(TAG, "getMessage: message1.obj = " + message1.obj);
                             myHandler.sendMessage(message1);
                         }
                     }

@@ -1,4 +1,4 @@
-package com.zdmysocketservice;
+package com.socket.service;
 
 import org.junit.Test;
 

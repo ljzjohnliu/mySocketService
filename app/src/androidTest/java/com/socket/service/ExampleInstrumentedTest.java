@@ -1,4 +1,4 @@
-package com.zdmysocketservice;
+package com.socket.service;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

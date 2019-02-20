@@ -1,4 +1,4 @@
-package com.zdmysocketservice.util;
+package com.socket.service.util;
 
 import android.content.Intent;
 import android.util.Log;
