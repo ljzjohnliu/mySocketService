@@ -17,6 +17,13 @@ import android.widget.Toast;
 import com.socket.service.util.SocketServer;
 import com.socket.service.util.WifiInfoUtil;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+
 /**
  * @author ljz
  *         服务端界面
@@ -113,12 +120,83 @@ public class ServicesTestTwoActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String mesStr = mMessageEdit.getText().toString();
+                mesStr = "HelloWorld！ from clientsocket this is test half packages!";
                 Log.d(TAG, "ServicesTestTwoActivity, mSendtoClientBtn 要发送的数据：" + mesStr);
                 Log.d(TAG, "ServicesTestTwoActivity, mSendtoClientBtn mSocketServer：" + mSocketServer);
                 if (mSocketServer != null) {
-                    mSocketServer.sendMessagetoClient(mesStr);
+//                    mSocketServer.sendLotMessagetoClient(mesStr);
+//                    mSocketServer.sendMessagetoClient(mesStr);
+                    Log.d(TAG, "ServicesTestTwoActivity, mSendtoClientBtn mSocket：" + mSocketServer.mSocket);
+                    if (mSocketServer.mSocket != null && mSocketServer.mSocket.isConnected()) {
+                        new SendThread(mSocketServer.mSocket).start();
+                    }
                 }
             }
         });
+    }
+
+    static class SendThread extends Thread {
+        Socket socket;
+        PrintWriter printWriter = null;
+
+        public SendThread(Socket socket) {
+            this.socket = socket;
+            try {
+                printWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void run() {
+            String reqMessage = "HelloWorld！ from clientsocket this is test half packages!";
+            for (int i = 0; i < 10; i++) {
+                Log.d(TAG, "run: ----sendPacket-----");
+                sendPacket(reqMessage);
+            }
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        public void sendPacket(String message) {
+            byte[] contentBytes = message.getBytes();// 包体内容
+            int contentlength = contentBytes.length;// 包体长度
+            String head = String.valueOf(contentlength);// 头部内容
+            byte[] headbytes = head.getBytes();// 头部内容字节数组
+            byte[] bytes = new byte[headbytes.length + contentlength];// 包=包头+包体
+            int i = 0;
+            for (i = 0; i < headbytes.length; i++) {// 包头
+                bytes[i] = headbytes[i];
+            }
+            for (int j = i, k = 0; k < contentlength; k++, j++) {// 包体
+                bytes[j] = contentBytes[k];
+            }
+            try {
+//                OutputStream writer = socket.getOutputStream();
+//                Log.d(TAG, "sendPacket: --------socket.isConnected = " + socket.isConnected());
+////                writer.write(bytes);
+//                writer.write(message.getBytes());
+//                writer.flush();
+                Log.d(TAG, "sendPacket: --------socket.isConnected = " + socket.isConnected());
+                DataOutputStream writer = new DataOutputStream(socket.getOutputStream());
+                Log.d(TAG, "sendPacket, run: 2222");
+//                writer.writeUTF(message);
+//                writer.write(message.getBytes());
+                writer.write(bytes);
+                Log.d(TAG, "sendPacket, run: 3333");
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                Log.d(TAG, "sendPacket: e = " + e);
+                e.printStackTrace();
+            }
+        }
     }
 }

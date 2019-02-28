@@ -5,6 +5,8 @@ import android.util.Log;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -74,6 +76,16 @@ public class SocketServer {
         }
     }
 
+    // 网上抄来的，将 int 转成字节
+    public static byte[] i2b(int i) {
+        return new byte[]{
+                (byte) ((i >> 24) & 0xFF),
+                (byte) ((i >> 16) & 0xFF),
+                (byte) ((i >> 8) & 0xFF),
+                (byte) (i & 0xFF)
+        };
+    }
+
     /**
      * 发送数据给客户端
      */
@@ -101,6 +113,52 @@ public class SocketServer {
 
     }
 
+    /**
+     * 发送数据给客户端
+     */
+    public static void sendLotMessagetoClient(final String messageStr) {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    //发送方式1
+//                    Log.d(TAG, "sendMessagetoClient, run: 1111");
+//                    DataOutputStream writer = new DataOutputStream(mSocket.getOutputStream());
+//                    Log.d(TAG, "sendMessagetoClient, run: 2222");
+//                    writer.writeUTF(messageStr);
+//                    Log.d(TAG, "sendMessagetoClient, run: 3333");
+////                        writer.close();
+//                    Log.d(TAG, "sendMessagetoClient, run: 4444");
+
+                    //发送方式2
+//                    OutputStream os = mSocket.getOutputStream();
+//                    os.write(i2b(messageStr.length()));         // 输出文件名长度
+//                    os.write(messageStr.getBytes());
+//                    os.close();
+
+//                    for(int i=0;i<10;i++){
+//                        OutputStream os = mSocket.getOutputStream();
+//                        os.write(messageStr.getBytes());
+////                        System.out.println("send message " + i + " " + messageStr);
+//                    }
+
+                    for (int i=0; i<10; i++) {
+                        Log.d(TAG, "sendLotMessagetoClient, run: 1111");
+                        DataOutputStream writer = new DataOutputStream(mSocket.getOutputStream());
+                        Log.d(TAG, "sendLotMessagetoClient, run: 2222");
+                        writer.writeUTF(messageStr);
+                        Log.d(TAG, "sendLotMessagetoClient, run: 3333");
+//                        writer.close();
+                    }
+
+                } catch (IOException e) {
+                    Log.e(TAG, "sendMessagetoClient, run: e = " + e);
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+
+    }
 
     public interface clientMessageCallBack {
         void getMessage(String message);
