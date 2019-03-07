@@ -156,14 +156,14 @@ public class ServicesTestTwoActivity extends AppCompatActivity {
                 Log.d(TAG, "run: ----sendPacket-----");
                 sendPacket(reqMessage);
             }
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
+//            if (socket != null) {
+//                try {
+//                    socket.close();
+//                } catch (IOException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
+//            }
         }
 
         public void sendPacket(String message) {
